@@ -1,0 +1,204 @@
+/* ==========================================================================
+   StudioBlank Design System — Tokens y Utilidades CSS Canónicas
+   ========================================================================== */
+
+:root {
+  /* Colors */
+  --sb-color-primary: #0A0A0A;
+  --sb-color-secondary: #FAFAFA;
+  --sb-color-tertiary: #D4D4D8;
+  --sb-surface-base: #FAFAFA;
+  --sb-surface-card: #FFFFFF;
+  --sb-surface-inverse: #0A0A0A;
+  --sb-surface-muted: #F4F4F5;
+
+  /* Semantics */
+  --sb-color-success: #16A34A;
+  --sb-color-warning: #CA8A04;
+  --sb-color-error: #DC2626;
+  --sb-color-info: #71717A;
+  --sb-color-disabled-text: #A1A1AA;
+  --sb-color-border-hover: #A1A1AA;
+
+  /* Typography */
+  --sb-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --sb-font-mono: 'IBM Plex Mono', monospace;
+
+  /* Spacing Scale (Base: 16px) */
+  --sb-space-1: 4px;
+  --sb-space-2: 8px;
+  --sb-space-3: 16px;
+  --sb-space-4: 32px;
+  --sb-space-5: 48px;
+  --sb-space-6: 64px;
+  --sb-space-8: 96px;
+  --sb-space-10: 128px;
+
+  /* Geometry & Flatness */
+  --sb-radius: 0px;
+  --sb-shadow: none;
+}
+
+/* Base Reset & Geometry Enforcement */
+.sb-surface,
+.sb-btn,
+.sb-card,
+.sb-input,
+.sb-chip,
+.sb-checkbox,
+.sb-radio,
+.sb-tooltip {
+  border-radius: var(--sb-radius) !important;
+  box-shadow: var(--sb-shadow) !important;
+  font-family: var(--sb-font-sans);
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+.sb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+.sb-btn:focus-visible {
+  outline: 2px solid var(--sb-color-primary);
+  outline-offset: 2px;
+}
+
+.sb-btn--sm {
+  height: 32px;
+  padding: 0 var(--sb-space-3);
+  font-size: 12px;
+  min-width: 64px;
+}
+
+.sb-btn--md {
+  height: 40px;
+  padding: 0 24px;
+  font-size: 14px;
+  min-width: 96px;
+}
+
+.sb-btn--lg {
+  height: 48px;
+  padding: 0 var(--sb-space-4);
+  font-size: 16px;
+  min-width: 128px;
+}
+
+/* Button Variants */
+.sb-btn--primary {
+  background-color: var(--sb-color-primary);
+  color: var(--sb-color-secondary);
+}
+.sb-btn--primary:hover:not(:disabled) {
+  background-color: #27272A;
+}
+
+.sb-btn--secondary {
+  border: 1px solid var(--sb-color-primary);
+  color: var(--sb-color-primary);
+}
+.sb-btn--secondary:hover:not(:disabled) {
+  background-color: var(--sb-color-primary);
+  color: var(--sb-color-secondary);
+}
+
+.sb-btn--ghost {
+  color: var(--sb-color-primary);
+}
+.sb-btn--ghost:hover:not(:disabled) {
+  background-color: var(--sb-surface-muted);
+}
+
+.sb-btn--destructive {
+  background-color: var(--sb-color-error);
+  color: var(--sb-color-secondary);
+}
+.sb-btn--destructive:hover:not(:disabled) {
+  background-color: #B91C1C;
+}
+
+.sb-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Cards
+   ========================================================================== */
+.sb-card {
+  background-color: var(--sb-surface-card);
+  border: 1px solid #E5E5E5;
+  transition: border-color 150ms ease;
+}
+.sb-card:hover {
+  border-color: var(--sb-color-primary);
+}
+.sb-card--image {
+  padding: 0;
+  overflow: hidden;
+}
+.sb-card--image img {
+  width: 100%;
+  display: block;
+}
+
+/* ==========================================================================
+   Inputs
+   ========================================================================== */
+.sb-input {
+  height: 40px;
+  padding: 0 var(--sb-space-3);
+  font-size: 14px;
+  color: var(--sb-color-primary);
+  background-color: var(--sb-surface-card);
+  border: 1px solid var(--sb-color-tertiary);
+  width: 100%;
+}
+.sb-input:hover:not(:disabled) {
+  border-color: var(--sb-color-border-hover);
+}
+.sb-input:focus {
+  outline: none;
+  border-color: var(--sb-color-primary);
+  border-width: 2px;
+}
+.sb-input--error {
+  border-color: var(--sb-color-error);
+}
+.sb-input:disabled {
+  background-color: var(--sb-surface-muted);
+  border-color: #E5E5E5;
+  color: var(--sb-color-disabled-text);
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Chips
+   ========================================================================== */
+.sb-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 var(--sb-space-2);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid var(--sb-color-tertiary);
+  color: var(--sb-color-info);
+  background: transparent;
+}
+.sb-chip--selected {
+  background-color: var(--sb-color-primary);
+  color: var(--sb-color-secondary);
+  border-color: var(--sb-color-primary);
+}

@@ -1,0 +1,63 @@
+services:
+  cinema-db:
+    image: postgres:16-alpine
+    container_name: cinema-core-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: cinema_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - cinema_pgdata:/var/lib/postgresql/data
+    networks:
+      - cinema-core-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d cinema_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cinema-core-backend
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      PORT: 3002
+      DATABASE_URL: postgresql://postgres:postgres@cinema-db:5432/cinema_db
+      AI_MCP_URL: http://localhost:8001
+      MEDIA_HUB_URL: http://localhost:8080
+      JWT_SECRET: cinema-core-secret-key-superadmin-test-2026
+    depends_on:
+      cinema-db:
+        condition: service_healthy
+    networks:
+      - cinema-core-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cinema-core-frontend
+    restart: unless-stopped
+    ports:
+      - "4200:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+    networks:
+      - cinema-core-network
+
+volumes:
+  cinema_pgdata:
+
+networks:
+  cinema-core-network:
+    driver: bridge

@@ -1,0 +1,21 @@
+services:
+  ai-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cine_ai_mcp_service
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    environment:
+      - PORT=8001
+      - ENVIRONMENT=production
+      - CINEMA_CORE_URL=http://cinema-core-backend:3002
+      - MEDIA_HUB_URL=http://media-hub-laravel:8080
+      - LOG_LEVEL=INFO
+    networks:
+      - cine_ai_network
+
+networks:
+  cine_ai_network:
+    driver: bridge

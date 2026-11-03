@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  ticketing-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cine_ticketing_backend
+    ports:
+      - "8082:8082"
+    environment:
+      - SERVER_PORT=8082
+      - SPRING_PROFILES_ACTIVE=prod
+      - DYNAMODB_ENDPOINT=http://dynamodb-local:8000
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - JWT_SECRET=cinecenter_jwt_secret_key_2026_super_secure_for_ticketing_auth
+      - STRIPE_API_KEY=sk_test_cinecenter_demo_key
+    depends_on:
+      - dynamodb-local
+      - rabbitmq
+    networks:
+      - ticketing_network
+    restart: unless-stopped
+
+  dynamodb-local:
+    image: amazon/dynamodb-local:latest
+    container_name: cine_ticketing_dynamodb
+    ports:
+      - "8000:8000"
+    command: "-jar ApacheJMeter.jar -sharedDb -dbPath /home/dynamodblocal/data"
+    volumes:
+      - dynamodb_data:/home/dynamodblocal/data
+    networks:
+      - ticketing_network
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: cine_ticketing_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=cinecenter_guest
+      - RABBITMQ_DEFAULT_PASS=cinecenter_rabbit_2026
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - ticketing_network
+    restart: unless-stopped
+
+networks:
+  ticketing_network:
+    name: cine_ticketing_network
+    driver: bridge
+
+volumes:
+  dynamodb_data:
+    name: cine_ticketing_dynamodb_data
+  rabbitmq_data:
+    name: cine_ticketing_rabbitmq_data

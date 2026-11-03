@@ -1,0 +1,120 @@
+# ==============================================================================
+# GITIGNORE GLOBAL — ARQUITECTURA MONOREPO / MULTI-SERVICIO
+# Proyecto: SW2-P2-CINE-MS-26-2
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Variables de Entorno y Secretos (Seguridad)
+# ------------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# ------------------------------------------------------------------------------
+# 2. Node.js & JavaScript/TypeScript (cinema-core, ticketing-auth frontend, media-hub)
+# ------------------------------------------------------------------------------
+node_modules/
+dist/
+out-tsc/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.npm/
+
+# Cachés de frameworks frontend (Angular / Vite)
+.angular/
+.vite/
+public/hot
+public/build/
+
+# ------------------------------------------------------------------------------
+# 3. Java & Gradle (ticketing-auth backend)
+# ------------------------------------------------------------------------------
+.gradle/
+build/
+target/
+bin/
+*.class
+*.jar
+*.war
+*.ear
+!gradle-wrapper.jar
+
+# ------------------------------------------------------------------------------
+# 4. PHP & Composer (media-hub - Laravel)
+# ------------------------------------------------------------------------------
+vendor/
+bootstrap/cache/*.php
+storage/app/public/*
+!storage/app/public/.gitignore
+storage/framework/cache/*
+!storage/framework/cache/.gitignore
+storage/framework/sessions/*
+!storage/framework/sessions/.gitignore
+storage/framework/views/*
+!storage/framework/views/.gitignore
+storage/logs/*.log
+!storage/logs/.gitignore
+
+# ------------------------------------------------------------------------------
+# 5. Python (ai-mcp)
+# ------------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+.coverage.*
+
+# ------------------------------------------------------------------------------
+# 6. Flutter & Dart (mobile-app)
+# ------------------------------------------------------------------------------
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+ms/mobile-app/build/
+ms/mobile-app/android/.gradle/
+ms/mobile-app/android/local.properties
+ms/mobile-app/ios/.symlinks/
+ms/mobile-app/ios/Pods/
+ms/mobile-app/ios/Podfile.lock
+ms/mobile-app/ios/Flutter/Generated.xcconfig
+ms/mobile-app/ios/Flutter/app.framework
+ms/mobile-app/ios/Flutter/Flutter.framework
+
+# ------------------------------------------------------------------------------
+# 7. IDEs, Editores y Sistema Operativo
+# ------------------------------------------------------------------------------
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# ------------------------------------------------------------------------------
+# 8. Directorios Temporales del Entorno de Agentes
+# ------------------------------------------------------------------------------
+scratch/

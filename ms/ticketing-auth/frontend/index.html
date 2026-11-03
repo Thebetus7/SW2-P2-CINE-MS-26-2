@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cine Center Bolivia — Portal Oficial de Taquilla</title>
+  <style>
+    :root {
+      --bg: #09090b;
+      --card: #18181b;
+      --border: #27272a;
+      --text: #f4f4f5;
+      --muted: #a1a1aa;
+      --primary: #f59e0b;
+      --primary-hover: #d97706;
+      --rose: #f43f5e;
+      --green: #10b981;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+    header {
+      background-color: #121215;
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .logo-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #f59e0b, #f43f5e);
+      color: #09090b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.1rem;
+    }
+    .brand { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 1.15rem; }
+    .status-badge { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: var(--muted); background: #27272a55; padding: 0.3rem 0.6rem; border-radius: 9999px; border: 1px solid var(--border); }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); }
+    
+    /* Layout Navigation Tabs */
+    .nav-tabs-group {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: #18181b;
+      padding: 0.25rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .nav-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.45rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .nav-tab:hover {
+      color: var(--text);
+      background: #27272a;
+    }
+    .nav-tab.active {
+      color: #09090b;
+      background: var(--primary);
+      border-color: var(--primary);
+      font-weight: 700;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+    }
+
+    .btn-login { background: var(--primary); color: #09090b; font-weight: 700; font-size: 0.85rem; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; border: none; cursor: pointer; transition: 0.2s; }
+    .btn-login:hover { background: var(--primary-hover); }
+    
+    main { flex: 1; max-width: 1200px; margin: 0 auto; width: 100%; padding: 2rem 1.5rem; }
+    .hero { margin-bottom: 2rem; }
+    .hero h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .hero p { color: var(--muted); font-size: 0.95rem; }
+
+    /* Grid Peliculas */
+    .movies-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+    .movie-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, border-color 0.2s; }
+    .movie-card:hover { transform: translateY(-4px); border-color: #3f3f46; }
+    .movie-info { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .movie-tags { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+    .tag-format { background: #27272a; color: var(--primary); font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid #3f3f46; }
+    .tag-duration { font-size: 0.75rem; color: var(--muted); }
+    .movie-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .movie-synopsis { font-size: 0.85rem; color: var(--muted); line-height: 1.4; margin-bottom: 1.25rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .showtimes-box { border-top: 1px solid var(--border); padding-top: 1rem; }
+    .showtimes-title { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .showtimes-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .btn-showtime { background: #27272a; border: 1px solid #3f3f46; color: var(--text); padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: 0.2s; font-family: monospace; }
+    .btn-showtime:hover { background: var(--primary); color: #09090b; border-color: var(--primary); }
+
+    /* Modal / Vistas Dinamicas */
+    .view-container { display: none; }
+    .view-active { display: block; }
+
+    /* Login Box */
+    .auth-box { max-width: 400px; margin: 3rem auto; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    .auth-box h2 { font-size: 1.4rem; font-weight: 700; text-align: center; margin-bottom: 0.3rem; }
+    .auth-box p { font-size: 0.85rem; color: var(--muted); text-align: center; margin-bottom: 1.5rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 500; margin-bottom: 0.4rem; color: #d4d4d8; }
+    .form-control { width: 100%; padding: 0.65rem 0.8rem; background: #27272a; border: 1px solid #3f3f46; border-radius: 6px; color: #fff; font-size: 0.9rem; }
+    .form-control:focus { outline: none; border-color: var(--primary); }
+    .btn-submit { width: 100%; padding: 0.75rem; background: var(--primary); color: #09090b; font-weight: 700; border-radius: 6px; border: none; cursor: pointer; font-size: 0.95rem; margin-top: 0.5rem; }
+    .btn-submit:hover { background: var(--primary-hover); }
+
+    /* Mapa de Butacas */
+    .seat-map-wrapper { max-width: 600px; margin: 0 auto; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; text-align: center; }
+    .screen-indicator { background: linear-gradient(180deg, #3f3f46, transparent); height: 12px; border-radius: 100px 100px 0 0; margin-bottom: 1.5rem; position: relative; }
+    .screen-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; margin-bottom: 1.5rem; }
+    .seats-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 0.5rem; justify-content: center; max-width: 400px; margin: 0 auto 1.5rem; }
+    .seat { aspect-ratio: 1; border-radius: 6px; background: #27272a; border: 1px solid #3f3f46; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; cursor: pointer; font-weight: 600; transition: 0.2s; }
+    .seat:hover { border-color: var(--primary); }
+    .seat.selected { background: var(--primary); color: #09090b; border-color: var(--primary); }
+    .timer-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.8rem; background: #78350f44; border: 1px solid var(--primary); border-radius: 9999px; color: var(--primary); font-weight: 700; margin-bottom: 1.5rem; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand" onclick="navigateTo('billboard')" style="cursor: pointer;">
+      <div class="logo-badge">CC</div>
+      <div>
+        <span>Cine Center Bolivia</span>
+        <span style="font-size: 0.75rem; color: var(--muted); display: block; font-weight: normal;">Portal Oficial — Puerto 3000</span>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <!-- Grupo de Navegacion Principal con Estado Activo -->
+      <nav class="nav-tabs-group" aria-label="Navegación principal">
+        <button id="nav-btn-billboard" class="nav-tab active" onclick="navigateTo('billboard')">
+          <span>🎬</span> Cartelera
+        </button>
+        <button id="btn-nav-tickets" class="nav-tab" onclick="navigateTo('my-tickets')">
+          <span>🎟️</span> Mis Boletos
+        </button>
+      </nav>
+
+      <div class="status-badge">
+        <div class="status-dot"></div>
+        <span>Taquilla Online</span>
+      </div>
+      <div class="status-badge" onclick="window.open('http://localhost:4200/admin', '_blank')" style="cursor: pointer;" title="Ir al panel ERP">
+        <span>ERP (:4200)</span>
+      </div>
+
+      <!-- Boton Iniciar Sesion (cuando es anonimo) -->
+      <button class="btn-login" id="header-btn" onclick="navigateTo('login')">Iniciar Sesión</button>
+
+      <!-- Menu Usuario & Configuracion (cuando esta autenticado) -->
+      <div class="user-menu-wrapper" id="user-menu-wrapper" style="display: none; position: relative;">
+        <button id="btn-user-config" onclick="toggleUserDropdown(event)" style="display: flex; align-items: center; gap: 0.5rem; background: #27272a; border: 1px solid #3f3f46; color: #fff; padding: 0.45rem 0.75rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer;">
+          <span style="width: 22px; height: 22px; border-radius: 50%; background: var(--primary); color: #000; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800;">👤</span>
+          <span id="user-display-email" style="max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">cliente@test.com</span>
+          <span style="font-size: 0.75rem; color: var(--muted);">⚙️ ▼</span>
+        </button>
+
+        <div id="user-dropdown-menu" style="display: none; position: absolute; right: 0; top: calc(100% + 8px); background: #18181b; border: 1px solid #3f3f46; border-radius: 8px; min-width: 230px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); padding: 0.75rem; z-index: 100;">
+          <div style="padding-bottom: 0.6rem; border-bottom: 1px solid #27272a; margin-bottom: 0.5rem;">
+            <div style="font-size: 0.75rem; color: var(--muted);">Usuario Activo:</div>
+            <div id="dropdown-user-email" style="font-weight: 700; font-size: 0.85rem; color: #fff; word-break: break-all;">cliente@test.com</div>
+            <div id="dropdown-user-role" style="font-size: 0.7rem; color: var(--primary); font-weight: 700; margin-top: 2px;">ROLE_CUSTOMER</div>
+          </div>
+          
+          <button onclick="navigateTo('my-tickets'); closeUserDropdown();" style="width: 100%; text-align: left; padding: 0.5rem 0.6rem; background: transparent; border: none; color: #e4e4e7; border-radius: 4px; font-size: 0.82rem; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: 0.15s;" onmouseover="this.style.background='#27272a'" onmouseout="this.style.background='transparent'">
+            <span>🎟️</span> Mis Boletos
+          </button>
+
+          <button onclick="navigateTo('billboard'); closeUserDropdown();" style="width: 100%; text-align: left; padding: 0.5rem 0.6rem; background: transparent; border: none; color: #e4e4e7; border-radius: 4px; font-size: 0.82rem; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: 0.15s;" onmouseover="this.style.background='#27272a'" onmouseout="this.style.background='transparent'">
+            <span>🎬</span> Cartelera Pública
+          </button>
+
+          <div style="border-top: 1px solid #27272a; margin-top: 0.5rem; padding-top: 0.5rem;">
+            <button onclick="logout()" style="width: 100%; text-align: left; padding: 0.5rem 0.6rem; background: #450a0a33; border: 1px solid #ef444455; color: #f87171; border-radius: 4px; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: 0.15s;" onmouseover="this.style.background='#ef4444'; this.style.color='#000';" onmouseout="this.style.background='#450a0a33'; this.style.color='#f87171';">
+              <span>🚪</span> Cerrar Sesión
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- VISTA 1: CARTELERA / WELCOME -->
+    <div id="view-billboard" class="view-container view-active">
+      <div class="hero">
+        <h1>Cartelera en Estreno</h1>
+        <p>Selecciona tu película y horario favorito para reservar tus butacas en tiempo real.</p>
+      </div>
+
+      <div class="movies-grid" id="movies-container">
+        <!-- Pelicula 1 -->
+        <div class="movie-card">
+          <div style="height: 380px; overflow: hidden; background: #000; position: relative;">
+            <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80" alt="Gladiator II" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <span style="position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.75); color: #f59e0b; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; backdrop-filter: blur(4px);">IMAX Laser</span>
+          </div>
+          <div class="movie-info">
+            <div>
+              <div class="movie-tags">
+                <span class="tag-format">Acción / Épica</span>
+                <span class="tag-duration">148 min</span>
+              </div>
+              <h2 class="movie-title">Gladiator II</h2>
+              <p class="movie-synopsis">Años después de presenciar la muerte de Máximo a manos de su tío, Lucio debe entrar al Coliseo.</p>
+            </div>
+            <div class="showtimes-box">
+              <div class="showtimes-title">Horarios disponibles hoy:</div>
+              <div class="showtimes-list">
+                <button class="btn-showtime" onclick="selectShowtime('Gladiator II', '14:00', 'Sala 1 IMAX', 45)">14:00 (Sala 1)</button>
+                <button class="btn-showtime" onclick="selectShowtime('Gladiator II', '17:00', 'Sala 1 IMAX', 45)">17:00 (Sala 1)</button>
+                <button class="btn-showtime" onclick="selectShowtime('Gladiator II', '20:00', 'Sala 1 IMAX', 45)">20:00 (Sala 1)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pelicula 2 -->
+        <div class="movie-card">
+          <div style="height: 380px; overflow: hidden; background: #000; position: relative;">
+            <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80" alt="Dune: Part Two" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <span style="position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.75); color: #f59e0b; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; backdrop-filter: blur(4px);">CXC Extreme</span>
+          </div>
+          <div class="movie-info">
+            <div>
+              <div class="movie-tags">
+                <span class="tag-format">Ciencia Ficción</span>
+                <span class="tag-duration">166 min</span>
+              </div>
+              <h2 class="movie-title">Dune: Part Two</h2>
+              <p class="movie-synopsis">Paul Atreides se une a Chani y a los Fremen mientras busca venganza contra los conspiradores.</p>
+            </div>
+            <div class="showtimes-box">
+              <div class="showtimes-title">Horarios disponibles hoy:</div>
+              <div class="showtimes-list">
+                <button class="btn-showtime" onclick="selectShowtime('Dune: Part Two', '15:30', 'Sala 2 CXC', 50)">15:30 (Sala 2)</button>
+                <button class="btn-showtime" onclick="selectShowtime('Dune: Part Two', '19:00', 'Sala 2 CXC', 50)">19:00 (Sala 2)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pelicula 3 -->
+        <div class="movie-card">
+          <div style="height: 380px; overflow: hidden; background: #000; position: relative;">
+            <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80" alt="Joker: Folie à Deux" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <span style="position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.75); color: #f59e0b; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; backdrop-filter: blur(4px);">VIP Atmos</span>
+          </div>
+          <div class="movie-info">
+            <div>
+              <div class="movie-tags">
+                <span class="tag-format">Drama / Psicológico</span>
+                <span class="tag-duration">138 min</span>
+              </div>
+              <h2 class="movie-title">Joker: Folie à Deux</h2>
+              <p class="movie-synopsis">Arthur Fleck se encuentra institucionalizado en Arkham esperando juicio por sus crímenes.</p>
+            </div>
+            <div class="showtimes-box">
+              <div class="showtimes-title">Horarios disponibles hoy:</div>
+              <div class="showtimes-list">
+                <button class="btn-showtime" onclick="selectShowtime('Joker: Folie à Deux', '16:00', 'Sala 4 VIP', 60)">16:00 (Sala 4)</button>
+                <button class="btn-showtime" onclick="selectShowtime('Joker: Folie à Deux', '21:15', 'Sala 4 VIP', 60)">21:15 (Sala 4)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA 2: LOGIN CENTRALIZADO -->
+    <div id="view-login" class="view-container">
+      <div class="auth-box">
+        <div class="logo-badge" style="margin: 0 auto 1rem;">CC</div>
+        <h2>Acceso Unificado</h2>
+        <p>Clientes, Cajeros y Personal Administrativo</p>
+        
+        <form onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label>Correo Electrónico</label>
+            <input type="email" id="login-email" class="form-control" placeholder="cliente@test.com" required value="cliente@test.com">
+          </div>
+          <div class="form-group">
+            <label>Contraseña</label>
+            <input type="password" id="login-password" class="form-control" required value="Password123!">
+          </div>
+          <button type="submit" class="btn-submit">Ingresar al Portal</button>
+        </form>
+
+        <div style="margin-top: 1.5rem; text-align: center; border-top: 1px solid var(--border); padding-top: 1.25rem;">
+          <span style="font-size: 0.8rem; font-weight: 600; color: #d4d4d8; display: block; margin-bottom: 0.75rem;">
+            ⚡ Rellenar Automáticamente por Rol:
+          </span>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <button 
+              type="button" 
+              onclick="fillAndFocus('cliente@test.com', 'Password123!')"
+              style="background: #27272a; border: 1px solid #3f3f46; color: #f4f4f5; padding: 0.6rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; text-align: left; display: flex; justify-content: space-between; align-items: center; transition: 0.2s;"
+              onmouseover="this.style.borderColor='#f59e0b'; this.style.backgroundColor='#3f3f46';"
+              onmouseout="this.style.borderColor='#3f3f46'; this.style.backgroundColor='#27272a';"
+            >
+              <span>👤 <strong>Cliente</strong> (cliente@test.com)</span>
+              <span style="color: var(--primary); font-size: 0.75rem;">Rellenar ➔</span>
+            </button>
+
+            <button 
+              type="button" 
+              onclick="fillAndFocus('operador@test.com', 'Password123!')"
+              style="background: #27272a; border: 1px solid #3f3f46; color: #f4f4f5; padding: 0.6rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; text-align: left; display: flex; justify-content: space-between; align-items: center; transition: 0.2s;"
+              onmouseover="this.style.borderColor='#6366f1'; this.style.backgroundColor='#3f3f46';"
+              onmouseout="this.style.borderColor='#3f3f46'; this.style.backgroundColor='#27272a';"
+            >
+              <span>🏢 <strong>Gerente ERP</strong> (operador@test.com)</span>
+              <span style="color: #a5b4fc; font-size: 0.75rem;">Rellenar ➔</span>
+            </button>
+
+            <button 
+              type="button" 
+              onclick="fillAndFocus('cajero@test.com', 'Password123!')"
+              style="background: #27272a; border: 1px solid #3f3f46; color: #f4f4f5; padding: 0.6rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; text-align: left; display: flex; justify-content: space-between; align-items: center; transition: 0.2s;"
+              onmouseover="this.style.borderColor='#10b981'; this.style.backgroundColor='#3f3f46';"
+              onmouseout="this.style.borderColor='#3f3f46'; this.style.backgroundColor='#27272a';"
+            >
+              <span>🍿 <strong>Cajero POS</strong> (cajero@test.com)</span>
+              <span style="color: #6ee7b7; font-size: 0.75rem;">Rellenar ➔</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA 3: SELECCION DE BUTACAS & CHECKOUT -->
+    <div id="view-seats" class="view-container">
+      <div class="seat-map-wrapper">
+        <div class="timer-badge">
+          ⏱️ Butacas Retenidas: <span id="timer-count">60s</span> (DynamoDB TTL)
+        </div>
+        <h2 id="selected-movie-title" style="margin-bottom: 0.25rem;">Gladiator II</h2>
+        <p id="selected-movie-info" style="color: var(--muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Sala 1 IMAX • 17:00</p>
+        
+        <div class="screen-indicator"></div>
+        <div class="screen-label">PANTALLA</div>
+
+        <div class="seats-grid" id="seats-grid">
+          <!-- Generado dinamicamente -->
+        </div>
+
+        <div id="checkout-alert" style="display: none; margin-top: 1rem; padding: 0.85rem; border-radius: 6px; font-size: 0.85rem; text-align: left; line-height: 1.4;"></div>
+
+        <div style="border-top: 1px solid var(--border); padding-top: 1.25rem; display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+          <div style="text-align: left;">
+            <div style="font-size: 0.75rem; color: var(--muted);">Total de la Orden:</div>
+            <div id="total-price" style="font-size: 1.4rem; font-weight: 800; color: var(--primary);">Bs. 0.00</div>
+          </div>
+          <button id="btn-confirm-checkout" class="btn-submit" style="width: auto; padding: 0.75rem 1.5rem;" onclick="processCheckout()">Confirmar Compra</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA 4: BILLETERA / MIS TICKETS -->
+    <div id="view-tickets" class="view-container">
+      <div class="auth-box" style="max-width: 500px; text-align: center;">
+        <span style="font-size: 2rem;">🎟️</span>
+        <h2 style="margin: 0.5rem 0;">¡Boleto Emitido Exitosamente!</h2>
+        <p>Tu orden ha sido confirmada en Stripe Sandbox.</p>
+
+        <div style="background: #27272a; padding: 1.25rem; border-radius: 8px; border: 1px dashed var(--border); margin: 1.5rem 0; text-align: left;">
+          <div style="font-weight: 700; font-size: 1.1rem; color: #fff;" id="ticket-movie">Gladiator II</div>
+          <div style="font-size: 0.85rem; color: var(--muted);" id="ticket-hall">Sala 1 IMAX • Butacas: A3, A4</div>
+          <div style="font-size: 0.85rem; color: var(--primary); font-weight: 700; margin-top: 0.5rem;" id="ticket-price">Total Pagado: Bs. 90.00</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+          <div style="background: #fff; padding: 1rem; border-radius: 8px; color: #000; text-align: center;">
+            <div style="font-weight: 800; font-size: 0.75rem; margin-bottom: 0.5rem; color: #09090b;">QR LLAVE SALA</div>
+            <canvas id="qr-hall-canvas" width="160" height="160" style="display: block; margin: 0 auto; max-width: 100%; height: auto;"></canvas>
+            <div style="font-size: 0.65rem; color: #555; margin-top: 0.5rem; font-weight: 600;">Firma HMAC Offline</div>
+          </div>
+          <div style="background: #fff; padding: 1rem; border-radius: 8px; color: #000; text-align: center;">
+            <div style="font-weight: 800; font-size: 0.75rem; margin-bottom: 0.5rem; color: #09090b;">QR CANDY BAR</div>
+            <canvas id="qr-candy-canvas" width="160" height="160" style="display: block; margin: 0 auto; max-width: 100%; height: auto;"></canvas>
+            <div style="font-size: 0.65rem; color: #555; margin-top: 0.5rem; font-weight: 600;">Canje Mostrador</div>
+          </div>
+        </div>
+
+        <button class="btn-submit" onclick="navigateTo('my-tickets')">Ver en Mis Boletos</button>
+        <button class="btn-submit" style="background: #27272a; color: #fff; margin-top: 0.5rem;" onclick="navigateTo('billboard')">Volver a la Cartelera</button>
+      </div>
+    </div>
+
+    <!-- VISTA 5: MODULO PERMANENTE MIS BOLETOS (PLAN-03, HU-03) -->
+    <div id="view-my-tickets" class="view-container">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+        <div>
+          <h1 style="font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+            <span>🎟️</span> Mis Boletos
+          </h1>
+          <p style="color: var(--muted); font-size: 0.9rem; margin-top: 0.25rem;">
+            Entradas y comprobantes digitales confirmados con doble código QR (Sala y Confitería).
+          </p>
+        </div>
+        <button class="btn-submit" style="width: auto; padding: 0.6rem 1.25rem; font-size: 0.85rem;" onclick="navigateTo('billboard')">
+          + Comprar Más Boletos
+        </button>
+      </div>
+
+      <!-- Zero-State (cuando no hay boletos) -->
+      <div id="wallet-zero-state" style="display: none; text-align: center; background: var(--card); border: 1px dashed var(--border); border-radius: 12px; padding: 4rem 2rem; max-width: 600px; margin: 2rem auto;">
+        <span style="font-size: 3.5rem; display: block; margin-bottom: 1rem;">🎫</span>
+        <h2 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem;">Aún no tienes boletos comprados</h2>
+        <p style="color: var(--muted); font-size: 0.9rem; line-height: 1.5; max-width: 420px; margin: 0 auto 1.5rem;">
+          Explora los estrenos y horarios disponibles en cartelera para reservar tus butacas favoritas en tiempo real.
+        </p>
+        <button class="btn-submit" style="width: auto; padding: 0.75rem 2rem; display: inline-flex; align-items: center; gap: 0.5rem;" onclick="navigateTo('billboard')">
+          <span>🎬</span> Explorar Cartelera
+        </button>
+      </div>
+
+      <!-- Listado de Boletos Activos -->
+      <div id="wallet-tickets-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem;">
+        <!-- Inyectado dinamicamente via renderMyTicketsView() -->
+      </div>
+    </div>
+
+    <!-- MODAL DETALLE DE BOLETO INTERACTIVO -->
+    <div id="modal-ticket-detail" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; align-items: center; justify-content: center; padding: 1.5rem; backdrop-filter: blur(4px);">
+      <div class="auth-box" style="max-width: 520px; width: 100%; margin: 0; text-align: center; position: relative;">
+        <button onclick="closeTicketModal()" style="position: absolute; top: 12px; right: 12px; background: #27272a; border: 1px solid #3f3f46; color: #fff; width: 32px; height: 32px; border-radius: 50%; font-size: 1rem; cursor: pointer;">✕</button>
+        <span style="font-size: 2rem;">🎟️</span>
+        <h2 id="modal-ticket-movie" style="margin: 0.4rem 0;">Gladiator II</h2>
+        <p id="modal-ticket-hall" style="color: var(--muted); font-size: 0.85rem;">Sala 1 IMAX • Butacas: A3, A4</p>
+
+        <div style="background: #27272a; padding: 1rem; border-radius: 8px; border: 1px solid var(--border); margin: 1.25rem 0; text-align: left; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Código de Boleto:</div>
+            <div id="modal-ticket-code" style="font-family: monospace; font-weight: 700; color: #f59e0b; font-size: 0.95rem;">TCK-BOL-0000</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 0.75rem; color: var(--muted);">Total Pagado:</div>
+            <div id="modal-ticket-price" style="font-weight: 800; color: #fff; font-size: 1.1rem;">Bs. 90.00</div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+          <div style="background: #fff; padding: 1rem; border-radius: 8px; color: #000; text-align: center;">
+            <div style="font-weight: 800; font-size: 0.75rem; margin-bottom: 0.5rem; color: #09090b;">QR LLAVE SALA</div>
+            <canvas id="modal-qr-hall-canvas" width="160" height="160" style="display: block; margin: 0 auto; max-width: 100%; height: auto;"></canvas>
+            <div style="font-size: 0.65rem; color: #555; margin-top: 0.5rem; font-weight: 600;">Firma HMAC Offline</div>
+          </div>
+          <div style="background: #fff; padding: 1rem; border-radius: 8px; color: #000; text-align: center;">
+            <div style="font-weight: 800; font-size: 0.75rem; margin-bottom: 0.5rem; color: #09090b;">QR CANDY BAR</div>
+            <canvas id="modal-qr-candy-canvas" width="160" height="160" style="display: block; margin: 0 auto; max-width: 100%; height: auto;"></canvas>
+            <div style="font-size: 0.65rem; color: #555; margin-top: 0.5rem; font-weight: 600;">Canje Mostrador</div>
+          </div>
+        </div>
+
+        <button class="btn-submit" onclick="closeTicketModal()">Cerrar Visor</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/qr-code-renderer.js"></script>
+  <script>
+    let currentView = 'billboard';
+    let currentUser = null;
+    let selectedShowtimeData = null;
+    let selectedSeats = [];
+    let timerInterval = null;
+    let secondsLeft = 60;
+    let postLoginRedirect = null;
+
+    function navigateTo(viewId, pushToHistory = true) {
+      if (viewId === 'my-tickets' && !currentUser) {
+        postLoginRedirect = 'my-tickets';
+        navigateTo('login', pushToHistory);
+        return;
+      }
+
+      document.querySelectorAll('.view-container').forEach(el => el.classList.remove('view-active'));
+      const target = document.getElementById('view-' + viewId);
+      if (target) target.classList.add('view-active');
+      currentView = viewId;
+      window.scrollTo(0, 0);
+
+      // Sincronizar estado activo en la barra de navegación del layout
+      const btnBillboard = document.getElementById('nav-btn-billboard');
+      const btnTickets = document.getElementById('btn-nav-tickets');
+      if (btnBillboard) btnBillboard.classList.toggle('active', viewId === 'billboard');
+      if (btnTickets) btnTickets.classList.toggle('active', viewId === 'my-tickets');
+
+      if (viewId === 'my-tickets') {
+        renderMyTicketsView();
+      }
+
+      // Sincronizar con el historial del navegador (History API)
+      if (pushToHistory) {
+        history.pushState({ view: viewId }, '', '#' + viewId);
+      }
+    }
+
+    function saveTicketToStorage(userEmail, ticketData) {
+      try {
+        const key = 'cinecenter_tickets_' + (userEmail || 'cliente@test.com');
+        const list = JSON.parse(localStorage.getItem(key) || '[]');
+        list.unshift(ticketData);
+        localStorage.setItem(key, JSON.stringify(list));
+      } catch (err) {
+        console.error('Error guardando en localStorage:', err);
+      }
+    }
+
+    function getTicketsFromStorage(userEmail) {
+      try {
+        const key = 'cinecenter_tickets_' + (userEmail || 'cliente@test.com');
+        return JSON.parse(localStorage.getItem(key) || '[]');
+      } catch (err) {
+        return [];
+      }
+    }
+
+    function renderMyTicketsView() {
+      const email = currentUser ? currentUser.email : 'cliente@test.com';
+      const tickets = getTicketsFromStorage(email);
+      const zeroState = document.getElementById('wallet-zero-state');
+      const grid = document.getElementById('wallet-tickets-grid');
+
+      if (!tickets || tickets.length === 0) {
+        zeroState.style.display = 'block';
+        grid.style.display = 'none';
+        grid.innerHTML = '';
+        return;
+      }
+
+      zeroState.style.display = 'none';
+      grid.style.display = 'grid';
+      grid.innerHTML = '';
+
+      tickets.forEach((t, idx) => {
+        const card = document.createElement('div');
+        card.className = 'movie-card';
+        card.style.padding = '1.25rem';
+        card.style.cursor = 'pointer';
+        card.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+            <span style="font-size: 0.75rem; font-weight: 700; background: #065f46; color: #a7f3d0; padding: 0.2rem 0.5rem; border-radius: 4px;">
+              EMITIDO OK
+            </span>
+            <span style="font-size: 0.75rem; color: var(--muted); font-family: monospace;">${t.ticketId}</span>
+          </div>
+          <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.25rem; color: #fff;">${t.movieTitle}</h3>
+          <p style="font-size: 0.82rem; color: var(--muted); margin-bottom: 0.75rem;">${t.hallName} • Horario: ${t.showtime}</p>
+          <div style="background: #27272a; padding: 0.75rem; border-radius: 6px; font-size: 0.8rem; margin-bottom: 1rem;">
+            <div><strong>Butacas:</strong> ${Array.isArray(t.seats) ? t.seats.join(', ') : t.seats}</div>
+            <div style="color: var(--primary); font-weight: 700; margin-top: 0.25rem;">Total: Bs. ${t.amountPaid}.00</div>
+          </div>
+          <button class="btn-submit" style="padding: 0.6rem; font-size: 0.85rem;" onclick="openTicketModalByIndex(${idx})">
+            Ver Boletos & Códigos QR ➔
+          </button>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function openTicketModalByIndex(idx) {
+      const email = currentUser ? currentUser.email : 'cliente@test.com';
+      const tickets = getTicketsFromStorage(email);
+      const ticket = tickets[idx];
+      if (!ticket) return;
+
+      document.getElementById('modal-ticket-movie').innerText = ticket.movieTitle;
+      document.getElementById('modal-ticket-hall').innerText = `${ticket.hallName} • Butacas: ${Array.isArray(ticket.seats) ? ticket.seats.join(', ') : ticket.seats}`;
+      document.getElementById('modal-ticket-code').innerText = ticket.ticketId;
+      document.getElementById('modal-ticket-price').innerText = `Total: Bs. ${ticket.amountPaid}.00`;
+
+      const modal = document.getElementById('modal-ticket-detail');
+      modal.style.display = 'flex';
+
+      // Renderizar los codigos QR reales en el modal
+      setTimeout(() => {
+        if (typeof renderQrToCanvas === 'function') {
+          renderQrToCanvas('modal-qr-hall-canvas', ticket.qrAccessKey || `HMAC:${ticket.ticketId}`, { size: 160 });
+          renderQrToCanvas('modal-qr-candy-canvas', ticket.qrCandyToken || `CANDY:${ticket.ticketId}`, { size: 160 });
+        }
+      }, 50);
+    }
+
+    function closeTicketModal() {
+      const modal = document.getElementById('modal-ticket-detail');
+      if (modal) modal.style.display = 'none';
+    }
+
+    // Escuchar el botón Atrás y Adelante del navegador
+    window.addEventListener('popstate', (e) => {
+      const view = (e.state && e.state.view) || location.hash.replace('#', '') || 'billboard';
+      navigateTo(view, false);
+    });
+
+    // Cargar la vista según el hash de la URL al iniciar
+    window.addEventListener('DOMContentLoaded', () => {
+      const initialView = location.hash.replace('#', '') || 'billboard';
+      navigateTo(initialView, false);
+      history.replaceState({ view: initialView }, '', '#' + initialView);
+    });
+
+    function fillAndFocus(email, password) {
+      const emailInput = document.getElementById('login-email');
+      const passInput = document.getElementById('login-password');
+      emailInput.value = email;
+      passInput.value = password;
+
+      // Efecto visual de retroalimentación
+      emailInput.style.borderColor = 'var(--primary)';
+      passInput.style.borderColor = 'var(--primary)';
+      setTimeout(() => {
+        emailInput.style.borderColor = '';
+        passInput.style.borderColor = '';
+      }, 800);
+
+      const submitBtn = document.querySelector('#view-login .btn-submit');
+      if (submitBtn) {
+        submitBtn.focus();
+        submitBtn.style.transform = 'scale(1.02)';
+        setTimeout(() => { submitBtn.style.transform = ''; }, 300);
+      }
+    }
+
+    function toggleUserDropdown(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById('user-dropdown-menu');
+      if (menu) {
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+      }
+    }
+
+    function closeUserDropdown() {
+      const menu = document.getElementById('user-dropdown-menu');
+      if (menu) menu.style.display = 'none';
+    }
+
+    document.addEventListener('click', (e) => {
+      const wrapper = document.getElementById('user-menu-wrapper');
+      if (wrapper && !wrapper.contains(e.target)) {
+        closeUserDropdown();
+      }
+    });
+
+    function updateUserInterface() {
+      const headerBtn = document.getElementById('header-btn');
+      const userMenuWrapper = document.getElementById('user-menu-wrapper');
+      const userDisplayEmail = document.getElementById('user-display-email');
+      const dropdownEmail = document.getElementById('dropdown-user-email');
+      const dropdownRole = document.getElementById('dropdown-user-role');
+
+      if (currentUser) {
+        if (headerBtn) headerBtn.style.display = 'none';
+        if (userMenuWrapper) userMenuWrapper.style.display = 'inline-block';
+        if (userDisplayEmail) userDisplayEmail.innerText = currentUser.email;
+        if (dropdownEmail) dropdownEmail.innerText = currentUser.email;
+        if (dropdownRole) dropdownRole.innerText = currentUser.role || 'ROLE_CUSTOMER';
+      } else {
+        if (headerBtn) headerBtn.style.display = 'inline-block';
+        if (userMenuWrapper) userMenuWrapper.style.display = 'none';
+        closeUserDropdown();
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      updateUserInterface();
+      navigateTo('billboard');
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const pass = document.getElementById('login-password').value;
+
+      if (pass !== 'Password123!') {
+        alert('Contraseña inválida. Usa: Password123!');
+        return;
+      }
+
+      // Redireccion por rol sin alertas bloqueantes (RB-06.1, INV-BIZ-05)
+      if (email.includes('admin') || email.includes('operador')) {
+        window.location.href = 'http://localhost:4200/admin';
+      } else if (email.includes('cajero')) {
+        window.location.href = 'http://localhost:8080/pos/candy-scan';
+      } else {
+        currentUser = { email, role: 'ROLE_CUSTOMER' };
+        updateUserInterface();
+        const dest = postLoginRedirect || 'billboard';
+        postLoginRedirect = null;
+        navigateTo(dest);
+      }
+    }
+
+    function selectShowtime(title, time, hall, price) {
+      selectedShowtimeData = { title, time, hall, price };
+      selectedSeats = [];
+      document.getElementById('selected-movie-title').innerText = title;
+      document.getElementById('selected-movie-info').innerText = `${hall} • ${time} • Bs. ${price}.00 c/u`;
+      document.getElementById('total-price').innerText = 'Bs. 0.00';
+
+      renderSeats();
+      startTimer();
+      navigateTo('seats');
+    }
+
+    function renderSeats() {
+      const grid = document.getElementById('seats-grid');
+      grid.innerHTML = '';
+      const rows = ['A', 'B', 'C', 'D'];
+      for (const r of rows) {
+        for (let c = 1; c <= 8; c++) {
+          const seatCode = `${r}${c}`;
+          const seatEl = document.createElement('div');
+          seatEl.className = 'seat';
+          seatEl.innerText = seatCode;
+          seatEl.onclick = () => toggleSeat(seatCode, seatEl);
+          grid.appendChild(seatEl);
+        }
+      }
+    }
+
+    function toggleSeat(code, element) {
+      const idx = selectedSeats.indexOf(code);
+      if (idx > -1) {
+        selectedSeats.splice(idx, 1);
+        element.classList.remove('selected');
+      } else {
+        selectedSeats.push(code);
+        element.classList.add('selected');
+      }
+      const total = selectedSeats.length * (selectedShowtimeData ? selectedShowtimeData.price : 45);
+      document.getElementById('total-price').innerText = `Bs. ${total}.00`;
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      secondsLeft = 60;
+      document.getElementById('timer-count').innerText = `${secondsLeft}s`;
+      timerInterval = setInterval(() => {
+        secondsLeft--;
+        document.getElementById('timer-count').innerText = `${secondsLeft}s`;
+        if (secondsLeft <= 0) {
+          clearInterval(timerInterval);
+          alert('⏰ El tiempo de bloqueo temporal de 60s ha expirado (DynamoDB TTL). Las butacas han sido liberadas.');
+          navigateTo('billboard');
+        }
+      }, 1000);
+    }
+
+    async function processCheckout() {
+      const alertBox = document.getElementById('checkout-alert');
+      const checkoutBtn = document.getElementById('btn-confirm-checkout');
+      alertBox.style.display = 'none';
+
+      if (selectedSeats.length === 0) {
+        alert('Por favor selecciona al menos una butaca en el mapa.');
+        return;
+      }
+
+      const total = selectedSeats.length * (selectedShowtimeData ? selectedShowtimeData.price : 45);
+      checkoutBtn.disabled = true;
+      checkoutBtn.innerText = 'Conectando con Backend...';
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+      try {
+        // Peticion real al microservicio de taquilla (Spring Boot en AWS, puerto 8082)
+        const response = await fetch('http://localhost:8082/api/v1/orders/checkout', {
+          method: 'POST',
+          signal: controller.signal,
+          headers: {
+            'Content-Type': 'application/json',
+            'Idempotency-Key': 'IDEMP-' + Date.now() + '-' + Math.random().toString(36).substring(2, 8)
+          },
+          body: JSON.stringify({
+            userId: currentUser ? currentUser.email : 'usr-anon',
+            userEmail: currentUser ? currentUser.email : 'cliente@test.com',
+            showtimeId: selectedShowtimeData.title,
+            seatCodes: selectedSeats,
+            amount: total
+          })
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          throw new Error(`El servidor respondió con código HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        clearInterval(timerInterval);
+        document.getElementById('ticket-movie').innerText = selectedShowtimeData.title;
+        document.getElementById('ticket-hall').innerText = `${selectedShowtimeData.hall} • Butacas: ${selectedSeats.join(', ')}`;
+        document.getElementById('ticket-price').innerText = `Total Pagado: Bs. ${total}.00`;
+
+        // Generar codigos QR reales en canvas (PLAN-02, RB-06.3 - CERO PLACEHOLDERS)
+        const hallPayload = data.accessKeyJwt || `HMAC:${data.orderId || Date.now()}:${selectedSeats.join(',')}`;
+        const candyPayload = data.candyBarToken || `CANDY:${data.orderId || Date.now()}:COMBO-CANJE`;
+
+        if (typeof renderQrToCanvas === 'function') {
+          renderQrToCanvas('qr-hall-canvas', hallPayload, { size: 160 });
+          renderQrToCanvas('qr-candy-canvas', candyPayload, { size: 160 });
+        }
+
+        // Persistir en billetera web (PLAN-03)
+        if (typeof saveTicketToStorage === 'function') {
+          saveTicketToStorage(currentUser ? currentUser.email : 'cliente@test.com', {
+            ticketId: data.ticketCode || 'TCK-BOL-' + Math.floor(1000 + Math.random() * 9000),
+            movieTitle: selectedShowtimeData.title,
+            hallName: selectedShowtimeData.hall,
+            showtime: selectedShowtimeData.time,
+            seats: [...selectedSeats],
+            amountPaid: total,
+            qrAccessKey: hallPayload,
+            qrCandyToken: candyPayload,
+            purchasedAtUtc: new Date().toISOString()
+          });
+        }
+
+        navigateTo('tickets');
+      } catch (err) {
+        clearTimeout(timeoutId);
+        // Manejo estricto de desconexion: NO se emite ningun boleto ni se muestra QR ficticio (RB-06.4)
+        console.error('Fallo de conexión al backend de taquilla:', err);
+        alertBox.style.display = 'block';
+        alertBox.style.background = '#450a0a';
+        alertBox.style.border = '1px solid #ef4444';
+        alertBox.style.color = '#fecaca';
+        alertBox.innerHTML = `
+          <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>⚠️</span> <span>No se pudo conectar al Backend de Taquilla (:8082)</span>
+          </div>
+          <div style="font-size: 0.82rem; color: #fca5a5;">
+            El microservicio <code>ms/ticketing-auth/backend</code> no está levantado o no responde en <code>http://localhost:8082</code>.
+            <br><strong>No se pudo emitir el boleto ni generar los códigos QR.</strong> La orden no ha sido cobrada y las butacas continúan retenidas.
+          </div>
+        `;
+      } finally {
+        checkoutBtn.disabled = false;
+        checkoutBtn.innerText = 'Confirmar Compra';
+      }
+    }
+  </script>
+</body>
+</html>
